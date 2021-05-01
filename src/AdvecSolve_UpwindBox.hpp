@@ -9,6 +9,11 @@ namespace AdvecSolve
 
 class UpwindBox : public EvoBase
 {
+  private:
+    // Since the stencil changes depending on the sign of the speed
+    // store the sign in this bool to avoid calculating at every step
+    bool m_advec_speed_positive;
+
   protected:
     // Implements the evolution by 1 step using the upwind method
     virtual void timestep() override;

@@ -26,5 +26,5 @@ A simple C++ code to solve the advection equation.
 An executable called advec-solve.ex will be created in the `build` directory
 which can be run in the usual way
 ```bash
-./advec_solve.ex
+./advec_solve.ex </path/to/params.txt>
 ```
