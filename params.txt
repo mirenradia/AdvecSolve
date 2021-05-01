@@ -2,11 +2,13 @@
 num_cells = 1000;
 # Maximum number of steps to evolve for
 max_steps = 100000
+# How frequently to write data to a file
+write_interval = 100
 # The coefficient a in the advection equation
-wave_speed = 1.0
+advec_speed = 1.0
 # The Courant factor = dt/dx
 dt_multiplier = 0.2
 # The grid spacing
 dx = 1.0
 # The location of the origin
-origin = 0.0
+centre = 0.0
