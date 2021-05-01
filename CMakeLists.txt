@@ -7,12 +7,11 @@ project(AdvecSolve)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Library
-add_library(AdvecSolveBase src/AdvecSolveBase.cpp)
+# Non-main Source files
+file(GLOB SOURCES src/*.cpp)
 
 # Executable
-add_executable(advec-solve.ex Main.cpp)
-target_link_libraries(advec-solve.ex AdvecSolveBase)
+add_executable(advec-solve.ex Main.cpp ${SOURCES})
 
 # Include directories
 target_include_directories(advec-solve.ex PUBLIC "${PROJECT_SOURCE_DIR}/src")
