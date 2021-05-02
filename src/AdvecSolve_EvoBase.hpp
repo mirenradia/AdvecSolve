@@ -34,7 +34,7 @@ class EvoBase
     // the parameter struct
     params_t m_p;
     // check whether parameters have been read
-    bool m_params_read = false;
+    bool m_params_set = false;
     // the solution now
     std::vector<double> m_state_new;
     // the solution at the previous timestep
@@ -56,23 +56,29 @@ class EvoBase
     virtual void timestep() = 0;
 
     // Write data (in m_state_new) to a file in ASCII format
-    void write_data();
+    void write_data() const;
 
   public:
     // constructor
     EvoBase();
 
     // returns the current time
-    double get_time();
+    double get_time() const;
+
+    // returns m_state_new
+    const std::vector<double> &get_data() const;
 
     // read parameters
     void read_params(const std::filesystem::path &a_params_file_path);
+
+    // Set parameters
+    void set_params(const params_t &a_params);
 
     // set initial data (pure virtual)
     virtual void set_initial_data() = 0;
 
     // do the evolution!
-    void run();
+    void run(bool write_out = true);
 };
 
 } // namespace AdvecSolve

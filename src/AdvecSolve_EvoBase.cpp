@@ -7,7 +7,7 @@ using namespace AdvecSolve;
 
 EvoBase::EvoBase() {}
 
-double EvoBase::get_time() { return m_step * m_p.dt_multiplier * m_p.dx; }
+double EvoBase::get_time() const { return m_step * m_p.dt_multiplier * m_p.dx; }
 
 void EvoBase::set_grid_coords()
 {
@@ -62,7 +62,7 @@ void EvoBase::load_param(const std::string &a_name, T &a_param,
     exit(3);
 }
 
-void EvoBase::write_data()
+void EvoBase::write_data() const
 {
     const std::string filename = "out.dat";
 
@@ -91,6 +91,8 @@ void EvoBase::write_data()
     out_file_stream << std::endl;
     // file automatically closes when going out of scope
 }
+
+const std::vector<double> &EvoBase::get_data() const { return m_state_new; }
 
 void EvoBase::read_params(const std::filesystem::path &a_params_file_path)
 {
@@ -126,19 +128,30 @@ void EvoBase::read_params(const std::filesystem::path &a_params_file_path)
     load_param("centre", m_p.centre, params_file_stream);
     set_grid_coords();
 
-    m_params_read = true;
+    m_params_set = true;
 }
 
-void EvoBase::run()
+void EvoBase::set_params(const params_t &a_params)
+{
+    m_p = a_params;
+    m_state_new.resize(m_p.num_cells);
+    m_state_old.resize(m_p.num_cells);
+    m_grid_coords.resize(m_p.num_cells);
+    set_grid_coords();
+
+    m_params_set = true;
+}
+
+void EvoBase::run(bool write_out)
 {
     // check that parameters have been read
-    assert(m_params_read);
+    assert(m_params_set);
 
     // main evolution loop
     for (; m_step < m_p.max_steps; ++m_step)
     {
         // write data to a file if step is a multiple of write_interval
-        if (m_step % m_p.write_interval == 0)
+        if (write_out && m_step % m_p.write_interval == 0)
         {
             write_data();
         }
@@ -148,6 +161,11 @@ void EvoBase::run()
         std::cout << "EvoBase::run: Step: " << std::setw(15) << m_step + 1
                   << "/" << m_p.max_steps << "\r";
         timestep();
+    }
+
+    if (write_out && m_step % m_p.write_interval == 0)
+    {
+        write_data();
     }
 
     std::cout << std::endl;

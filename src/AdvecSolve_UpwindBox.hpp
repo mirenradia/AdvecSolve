@@ -24,6 +24,9 @@ class UpwindBox : public EvoBase
   public:
     // Sets the box initial data
     virtual void set_initial_data() override;
+
+    // Use the analytic solution to calculate the L2 norm of the error
+    double compute_error_l2_norm() const;
 };
 
 } // namespace AdvecSolve
