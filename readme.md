@@ -1,9 +1,12 @@
 # AdvecSolve
 
-A simple C++ code to solve the advection equation.
+A simple C++ code to solve the 1D advection equation.
+
+## Using the code
 
 ### Obtaining the code
-Clone this repository from GitHub in the usual way, for example
+Assuming you are already in the directory you want to place the code in,
+clone this repository from GitHub in the usual way, for example
 ```bash
 git clone https://github.com/mirenradia/AdvecSolve.git
 ```
@@ -17,7 +20,7 @@ git clone https://github.com/mirenradia/AdvecSolve.git
  * _[Optional]_ A non-ancient version of gnuplot for visualizing the output
    (tested: gnuplot v5.2.8)
 
-### Build Instructions
+### Build instructions
 
  1. Change directory into the `build` subdirectory:
  ```bash
@@ -61,6 +64,10 @@ do:
 ./advec_solve.ex ../params.txt
 ```
 
+Note that, since the provided initial data is discontinuous and the evolution
+scheme used is first order upwind, a significant amount of diffusion is added
+to the solution which will lead to large errors for long evolutions.
+
 ### Code output
 
 After running, the code will write a single ASCII data file named
@@ -72,3 +79,61 @@ which can be used to visualise the data using
 ```bash
 gnuplot animation.gpi
 ```
+
+## Design
+
+### Existing implementation
+
+The code is written in a C++ object-oriented style which may seem a little
+strange for those familiar with functional programming languages such as C or
+Fortran but it should not be too complicated. Rather than calling free
+functions, a solver object is created, and then member functions are called
+to set up and run the simulation (see [Main.cpp](./Main.cpp)).
+
+All of the code is defined within a namespace:
+```cpp
+namespace AdvecSolve;
+```
+in order to avoid any conflicts with other libraries.
+
+There are 2 classes: an abstract base evolution class:
+```cpp
+class EvoBase;
+```
+and a specialized child class
+```cpp
+class FirstOrderUpwindBox;
+```
+which inherits from `EvoBase`.
+
+`EvoBase` is intended to be agnostic of the specific evolution scheme and
+initial data. It provides/implements:
+ * Parameter reading and storage (`m_p`)
+ * State vector storage (`m_state_new` and `m_state_old`)
+ * Data output (`write_data()`)
+ * Error norm calculation - since we know the analytic solution to the advection
+   equation (`compute_error_l2_norm()`)
+ * Set up of initial grids (`set_initial_grids()`)
+ * The outer part of the main evolution loop in `run()` which calls `timestep()`
+   (defined in the child class) at each timestep
+
+`FirstOrderUpwindBox` specialises `EvoBase` for a specific problem and evolution
+scheme. It implements:
+ * The `timestep()` function called by `EvoBase::run()` which implements the
+   [first-order upwind evolution scheme](
+   https://en.wikipedia.org/wiki/Upwind_scheme)
+ * The computation of the initial data (`initial_data()`)
+
+### Modifying the code
+
+If you wish to use the existing evolution scheme but just change the initial
+data, you can define a new child class of `FirstOrderUpwindBox` which overrides
+the virtual function `initial_data()` (for example, see [ConvergenceTest.cpp](
+./ConvergenceTest.cpp)).
+
+If you wish to use a different evolution scheme, it may be easier to write your
+own child class of `EvoBase` and implement its virtual functions as in
+`FirstOrderUpwindBox`.
+
+For more substantial changes, it is probably easier to read the code in order
+to understand how it works
