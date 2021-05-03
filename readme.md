@@ -1,5 +1,8 @@
 # AdvecSolve
 
+![Check clang-format](https://github.com/mirenradia/AdvecSolve/actions/workflows/check-clang-format.yml/badge.svg)
+![Build and test](https://github.com/mirenradia/AdvecSolve/actions/workflows/build-and-test.yml/badge.svg)
+
 A simple C++ code to solve the 1D advection equation.
 
 ## Using the code
