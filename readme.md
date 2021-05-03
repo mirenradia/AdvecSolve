@@ -3,7 +3,9 @@
 ![Check clang-format](https://github.com/mirenradia/AdvecSolve/actions/workflows/check-clang-format.yml/badge.svg)
 ![Build and test](https://github.com/mirenradia/AdvecSolve/actions/workflows/build-and-test.yml/badge.svg)
 
-A simple C++ code to solve the 1D advection equation.
+A simple C++ code to solve the 1D advection equation:
+
+<img src="https://latex.codecogs.com/svg.image?\frac{\partial&space;u}{\partial&space;t}&space;&plus;&space;a&space;\frac{\partial&space;u}{\partial&space;x}&space;=&space;0" title="\frac{\partial u}{\partial t} + a \frac{\partial u}{\partial x} = 0" />
 
 ## Using the code
 
@@ -14,7 +16,7 @@ clone this repository from GitHub in the usual way, for example
 git clone https://github.com/mirenradia/AdvecSolve.git
 ```
 
-### Prerequisites:
+### Prerequisites
  * [CMake](https://cmake.org/) v3.8 or greater
    * This code has been built successfully with:
      * v3.8.1
