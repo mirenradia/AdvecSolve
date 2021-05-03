@@ -1,5 +1,6 @@
 #include "AdvecSolve_EvoBase.hpp"
 #include <cassert>
+#include <cmath>
 #include <cstdlib>
 #include <sstream>
 
@@ -134,15 +135,18 @@ void EvoBase::read_params(const std::filesystem::path &a_params_file_path)
 void EvoBase::set_params(const params_t &a_params)
 {
     m_p = a_params;
-    m_state_new.resize(m_p.num_cells);
-    m_state_old.resize(m_p.num_cells);
-    m_grid_coords.resize(m_p.num_cells);
-    set_grid_coords();
-
     m_params_set = true;
 }
 
-void EvoBase::run(bool write_out)
+void EvoBase::set_initial_grids()
+{
+    m_state_new = compute_initial_data();
+    m_state_old.resize(m_p.num_cells);
+    m_grid_coords.resize(m_p.num_cells);
+    set_grid_coords();
+}
+
+void EvoBase::run(bool a_write_out)
 {
     // check that parameters have been read
     assert(m_params_set);
@@ -151,7 +155,7 @@ void EvoBase::run(bool write_out)
     for (; m_step < m_p.max_steps; ++m_step)
     {
         // write data to a file if step is a multiple of write_interval
-        if (write_out && m_step % m_p.write_interval == 0)
+        if (a_write_out && m_step % m_p.write_interval == 0)
         {
             write_data();
         }
@@ -160,13 +164,76 @@ void EvoBase::run(bool write_out)
         m_state_new.swap(m_state_old);
         std::cout << "EvoBase::run: Step: " << std::setw(15) << m_step + 1
                   << "/" << m_p.max_steps << "\r";
+        // call the timestep function (implemented in child class)
         timestep();
     }
 
-    if (write_out && m_step % m_p.write_interval == 0)
+    // write data at the end
+    if (a_write_out && m_step % m_p.write_interval == 0)
     {
         write_data();
     }
 
     std::cout << std::endl;
+}
+
+double EvoBase::compute_error_l2_norm() const
+{
+    std::vector<double> initial_data = compute_initial_data();
+
+    int analytic_cell_shift = std::round(get_time() * m_p.advec_speed / m_p.dx);
+
+    std::vector<double> analytic_solution(m_p.num_cells);
+    for (int i = 0; i < m_p.num_cells; ++i)
+    {
+        int initial_data_idx = (i - analytic_cell_shift);
+        // deal with periodicity below
+        while (initial_data_idx < 0)
+        {
+            initial_data_idx += m_p.num_cells;
+        }
+        while (initial_data_idx >= m_p.num_cells)
+        {
+            initial_data_idx -= m_p.num_cells;
+        }
+        analytic_solution[i] = initial_data[initial_data_idx];
+    }
+
+    double norm_sq = 0.0;
+    for (int i = 0; i < m_p.num_cells; ++i)
+    {
+        double error = m_state_new[i] - analytic_solution[i];
+        norm_sq += error * error;
+    }
+    // need to normalise by grid spacing
+    norm_sq *= m_p.dx;
+
+    return std::sqrt(norm_sq);
+}
+
+void EvoBase::write_gnuplot_animation_script() const
+{
+    std::string anim_script_filename = "animation.gpi";
+    std::ofstream anim_script_stream(anim_script_filename);
+
+    if (!anim_script_stream)
+    {
+        std::cerr << "Error openining " << anim_script_filename
+                  << " for writing." << std::endl;
+    }
+
+    anim_script_stream << "set xrange ["
+                       << static_cast<int>(std::floor(m_grid_coords.front()))
+                       << ":"
+                       << static_cast<int>(std::ceil(m_grid_coords.back()))
+                       << "]\n";
+    anim_script_stream << "do for [i=0:" << m_p.max_steps / m_p.write_interval
+                       << "] {\n";
+    anim_script_stream << "\ttime = "
+                       << m_p.dt_multiplier * m_p.dx * m_p.write_interval
+                       << "*i\n";
+    anim_script_stream << "\ttitlevar = sprintf(\"time = %f\", time)\n";
+    anim_script_stream << "\tplot 'out.dat' using 1:2 every :::i::i with "
+                          "lines title titlevar\n";
+    anim_script_stream << "\tpause 0.05 \n}\n";
 }

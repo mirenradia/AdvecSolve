@@ -12,3 +12,5 @@ _deps
 *.ex
 *.a
 *.dat
+*.gpi
+build/*

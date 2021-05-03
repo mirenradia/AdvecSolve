@@ -1,9 +1,9 @@
-#include "AdvecSolve_UpwindBox.hpp"
+#include "AdvecSolve_FirstOrderUpwindBox.hpp"
 #include <cmath>
 
 using namespace AdvecSolve;
 
-void UpwindBox::timestep()
+void FirstOrderUpwindBox::timestep()
 {
     // references for aesthetic reasons only
     std::vector<double> &u_new = m_state_new;
@@ -38,61 +38,21 @@ void UpwindBox::timestep()
     }
 }
 
-void UpwindBox::load_specific_params()
+void FirstOrderUpwindBox::load_specific_params()
 {
     m_advec_speed_positive = (m_p.advec_speed > 0.0);
 }
 
-void UpwindBox::set_initial_data()
+std::vector<double> FirstOrderUpwindBox::compute_initial_data() const
 {
+    std::vector<double> out(m_p.num_cells);
     for (int i = 0; i < m_p.num_cells; ++i)
     {
         if (i + 1 < std::round(0.25 * m_p.num_cells) ||
             i + 1 > std::round(0.75 * m_p.num_cells))
-            m_state_new[i] = 0.1;
+            out[i] = 0.1;
         else
-            m_state_new[i] = 1.0;
+            out[i] = 1.0;
     }
-}
-
-double UpwindBox::compute_error_l2_norm() const
-{
-    std::vector<double> initial_data(m_p.num_cells);
-    for (int i = 0; i < m_p.num_cells; ++i)
-    {
-        if (i + 1 < std::round(0.25 * m_p.num_cells) ||
-            i + 1 > std::round(0.75 * m_p.num_cells))
-            initial_data[i] = 0.1;
-        else
-            initial_data[i] = 1.0;
-    }
-
-    int analytic_cell_shift = std::round(get_time() * m_p.advec_speed / m_p.dx);
-
-    std::vector<double> analytic_solution(m_p.num_cells);
-    for (int i = 0; i < m_p.num_cells; ++i)
-    {
-        int initial_data_idx = (i - analytic_cell_shift);
-        // deal with periodicity below
-        while (initial_data_idx < 0)
-        {
-            initial_data_idx += m_p.num_cells;
-        }
-        while (initial_data_idx >= m_p.num_cells)
-        {
-            initial_data_idx -= m_p.num_cells;
-        }
-        analytic_solution[i] = initial_data[initial_data_idx];
-    }
-
-    double norm_sq = 0.0;
-    for (int i = 0; i < m_p.num_cells; ++i)
-    {
-        double error = m_state_new[i] - analytic_solution[i];
-        norm_sq += error * error;
-    }
-    // need to normalise by grid spacing
-    norm_sq *= m_p.dx;
-
-    return std::sqrt(norm_sq);
+    return out;
 }

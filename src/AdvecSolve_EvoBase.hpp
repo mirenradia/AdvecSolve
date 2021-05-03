@@ -28,6 +28,8 @@ struct params_t
 class EvoBase
 {
   private:
+    // just puts the x-coordinates of the grid in m_grid_coords
+    // keep this private as no child class should need this
     void set_grid_coords();
 
   protected:
@@ -44,18 +46,18 @@ class EvoBase
     // the current timestep
     int m_step = 0;
 
-    // Load a single parameter from the parameter file
+    // load a single parameter from the parameter file
     template <typename T>
     void load_param(const std::string &a_name, T &a_param,
                     std::ifstream &a_params_file_stream);
 
-    // Load specific parameters (pure virtual)
+    // load specific parameters (pure virtual)
     virtual void load_specific_params() = 0;
 
     // advance one timestep (pure virtual)
     virtual void timestep() = 0;
 
-    // Write data (in m_state_new) to a file in ASCII format
+    // write data (in m_state_new) to a file in ASCII format
     void write_data() const;
 
   public:
@@ -71,14 +73,23 @@ class EvoBase
     // read parameters
     void read_params(const std::filesystem::path &a_params_file_path);
 
-    // Set parameters
+    // set parameters
     void set_params(const params_t &a_params);
 
-    // set initial data (pure virtual)
-    virtual void set_initial_data() = 0;
+    // set initial data
+    void set_initial_grids();
+
+    // construct initial data (pure virtual)
+    virtual std::vector<double> compute_initial_data() const = 0;
 
     // do the evolution!
-    void run(bool write_out = true);
+    void run(bool a_write_out = true);
+
+    // use the analytic solution to compute the L2 norm of the error
+    double compute_error_l2_norm() const;
+
+    // writes a script that gnuplot can use to visualise the data
+    void write_gnuplot_animation_script() const;
 };
 
 } // namespace AdvecSolve

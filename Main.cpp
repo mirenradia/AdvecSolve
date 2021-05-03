@@ -1,4 +1,4 @@
-#include "AdvecSolve_UpwindBox.hpp"
+#include "AdvecSolve_FirstOrderUpwindBox.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -9,17 +9,20 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // Construct main solver object
-    AdvecSolve::UpwindBox advec_solve;
+    // construct main solver object
+    AdvecSolve::FirstOrderUpwindBox advec_solve;
 
     // read params from parameter file
     advec_solve.read_params(argv[1]);
 
-    // set the initial data
-    advec_solve.set_initial_data();
+    // construct initial grids and set initial data
+    advec_solve.set_initial_grids();
 
     // do the evolution
     advec_solve.run();
+
+    // write animation script which can be passed to gnuplto for visualization
+    advec_solve.write_gnuplot_animation_script();
 
     return 0;
 }

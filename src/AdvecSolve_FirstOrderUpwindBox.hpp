@@ -1,5 +1,5 @@
-#ifndef ADVECSOLVE_UPWINDBOX_HPP_
-#define ADVECSOLVE_UPWINDBOX_HPP_
+#ifndef ADVECSOLVE_FIRSTORDERUPWINDBOX_HPP_
+#define ADVECSOLVE_FIRSTORDERUPWINDBOX_HPP_
 
 #include "AdvecSolve_EvoBase.hpp"
 
@@ -7,7 +7,9 @@
 namespace AdvecSolve
 {
 
-class UpwindBox : public EvoBase
+// This is a child class of EvoBase and implements the specific evolution
+// method and initial data
+class FirstOrderUpwindBox : public EvoBase
 {
   private:
     // Since the stencil changes depending on the sign of the speed
@@ -22,12 +24,9 @@ class UpwindBox : public EvoBase
     virtual void load_specific_params() override;
 
   public:
-    // Sets the box initial data
-    virtual void set_initial_data() override;
-
-    // Use the analytic solution to calculate the L2 norm of the error
-    double compute_error_l2_norm() const;
+    // Computes the box-like initial data
+    virtual std::vector<double> compute_initial_data() const override;
 };
 
 } // namespace AdvecSolve
-#endif /* ADVECSOLVE_UPWINDBOX_HPP_ */
+#endif /* ADVECSOLVE_FIRSTORDERUPWINDBOX_HPP_ */
