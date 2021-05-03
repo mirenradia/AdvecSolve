@@ -1,5 +1,7 @@
 #include "AdvecSolve_FirstOrderUpwindBox.hpp"
 #include <cmath>
+#include <iomanip>
+#include <iostream>
 
 namespace AdvecSolve
 {
@@ -75,7 +77,7 @@ int main(int argc, char *argv[])
 
     // Since the upwind method is first order, we expect the convergence
     // ratio to be 2 but allow a 5% tolerance
-    if (std::abs(convergence_ratio - 2.0) > 0.1)
+    if (std::abs(convergence_ratio - 2.0) < 0.1)
     {
         std::cout << "Convergence Test PASSED" << std::endl;
         return 0;
