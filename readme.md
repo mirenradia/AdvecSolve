@@ -12,18 +12,33 @@ git clone https://github.com/mirenradia/AdvecSolve.git
 ```
 
 ### Prerequisites:
- * CMake v3.10 or greater (tested: v3.16.3)
- * A C++ compiler with C++17 support e.g. g++ v8 or greater
-   (tested: g++ v8.4.0, v9.3.0, v10.2.0 and v11.1.0). Note that older versions
-   with partial C++17 support will probably lead to compilation errors due to
-   the lack of the `std::filesystem` library.
- * _[Optional]_ A non-ancient version of gnuplot for visualizing the output
-   (tested: gnuplot v5.2.8)
+ * [CMake](https://cmake.org/) v3.8 or greater
+   * This code has been built successfully with:
+     * v3.8.1
+     * v3.16.3
+     * v3.17.0
+ * A C++ compiler with C++17 support
+   * This code has been built successfully with:
+     * GCC `g++`:
+       * v8.4.0
+       * v9.3.0
+       * v10.2.0
+       * v11.1.0
+     * Intel C++ Compiler (Classic) `icpc`:
+       * v19.0.4.243
+     * LLVM Clang `clang++`:
+       * v10.0.0
+  * Note that older compiler versions
+    with partial C++17 support will probably lead to compilation/linking
+    errors due to the use of the `std::filesystem` library.
+
+ * _[Optional]_ A non-ancient version of gnuplot for visualizing the output.
 
 ### Build instructions
 
- 1. Change directory into the `build` subdirectory:
+ 1. Make a `build` directory and change into it:
  ```bash
+ mkdir /path/to/AdvecSolve/build
  cd /path/to/AdvecSolve/build
  ```
 

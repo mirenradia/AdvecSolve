@@ -22,7 +22,7 @@ struct params_t
     double centre;        // the x-coordinate of the centre
 };
 
-// A base class for doing the time evolution. It is necessary to
+// An abstract base class for doing the time evolution. It is necessary to
 // define a child class to implement the specific evolution and initial data.
 class EvoBase
 {
