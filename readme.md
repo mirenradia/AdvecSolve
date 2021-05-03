@@ -35,7 +35,7 @@ git clone https://github.com/mirenradia/AdvecSolve.git
     with partial C++17 support will probably lead to compilation/linking
     errors due to the use of the `std::filesystem` library.
 
- * _[Optional]_ A non-ancient version of gnuplot for visualizing the output.
+ * _[Optional]_ A non-ancient version of gnuplot for visualising the output.
 
 ### Build instructions
 
@@ -50,7 +50,7 @@ git clone https://github.com/mirenradia/AdvecSolve.git
  cmake ..
  ```
 
- 3. Build using cmake:
+ 3. Build using CMake:
  ```bash
  cmake --build .
  ```
@@ -66,10 +66,11 @@ binary with no arguments:
 ```bash
 ./convergence-test.ex
 ```
-If successful, the final printed line will say
+If successful, the final printed line will be
 ```
 Convergence Test PASSED
 ```
+and the code will exit with return code 0.
 
 ### Running the code
 
