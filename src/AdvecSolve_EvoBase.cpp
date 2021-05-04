@@ -120,16 +120,13 @@ void EvoBase::read_params(const std::filesystem::path &a_params_file_path)
     }
 
     load_param("num_cells", m_p.num_cells, params_file_stream);
-    m_state_new.resize(m_p.num_cells);
-    m_state_old.resize(m_p.num_cells);
-    m_grid_coords.resize(m_p.num_cells);
     load_param("max_steps", m_p.max_steps, params_file_stream);
     load_param("write_interval", m_p.write_interval, params_file_stream);
     load_param("advec_speed", m_p.advec_speed, params_file_stream);
     load_param("dt_multiplier", m_p.dt_multiplier, params_file_stream);
     load_param("dx", m_p.dx, params_file_stream);
     load_param("centre", m_p.centre, params_file_stream);
-    set_grid_coords();
+    load_specific_params();
 
     m_params_set = true;
 }
@@ -137,6 +134,7 @@ void EvoBase::read_params(const std::filesystem::path &a_params_file_path)
 void EvoBase::set_params(const params_t &a_params)
 {
     m_p = a_params;
+    load_specific_params();
     m_params_set = true;
 }
 
