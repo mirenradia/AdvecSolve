@@ -17,9 +17,14 @@ file(GLOB SOURCES src/*.cpp)
 # test
 add_library(advecsolve ${SOURCES})
 
-# Link libraries for both executables. Note libstd++fs is for some older GCC
-# versions as this is part of libstdc++ for newer GCC versions
-link_libraries(advecsolve stdc++fs)
+# Link libraries for both executables.
+link_libraries(advecsolve)
+if ((${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU") AND
+    (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 9.1.0))
+  # Only need to explicitly link with libstdc++fs for GCC versions < 9
+  message(STATUS "GCC version < 9: Linking with libstdc++fs")
+  link_libraries(stdc++fs)
+endif()
 
 # Main executable
 add_executable(advec-solve.ex Main.cpp)
